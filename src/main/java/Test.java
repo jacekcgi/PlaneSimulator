@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
  */
 public class Test {
     public static void main(String[] args) {
+        double flightTimeInHour = 9830d/3600000d;
+        System.out.println(flightTimeInHour);
 
         Consumer<Plane> greeter = (p) -> System.out.println("Hello, " + p.getId());
         greeter.accept(new Plane());

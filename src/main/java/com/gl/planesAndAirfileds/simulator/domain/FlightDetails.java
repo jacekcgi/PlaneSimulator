@@ -2,58 +2,48 @@ package com.gl.planesAndAirfileds.simulator.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.Date;
-
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FlightDetails {
-    public FlightDetails(String gpsLatitude, String gpsLongitude, Float course, Float velocity,Plane plane) {
+    public FlightDetails(long incomingTime, Double gpsLatitude, Double gpsLongitude, Double course, Double velocity, Plane plane) {
         this.gpsLatitude = gpsLatitude;
         this.gpsLongitude = gpsLongitude;
         this.course = course;
         this.velocity = velocity;
         this.plane = plane;
+        this.incomingTime = incomingTime;
     }
     public FlightDetails() {
 
     }
-    private String gpsLatitude;
-    private String gpsLongitude;
-    private Float course;
-    private Float velocity;
-    private Integer averageFuelConsumption;
-    private Date incomingTime;
+    private Double gpsLatitude;
+    private Double gpsLongitude;
+    private Double course;
+    private Double velocity;
+    private Long incomingTime;
     private Plane plane;
 
-    public String getGpsLatitude() {
+    public Double getGpsLatitude() {
         return gpsLatitude;
     }
 
-    public void setGpsLatitude(String gpsLatitude) {
+    public void setGpsLatitude(Double gpsLatitude) {
         this.gpsLatitude = gpsLatitude;
     }
 
-    public String getGpsLongitude() {
+    public Double getGpsLongitude() {
         return gpsLongitude;
     }
 
-    public void setGpsLongitude(String gpsLongitude) {
+    public void setGpsLongitude(Double gpsLongitude) {
         this.gpsLongitude = gpsLongitude;
     }
 
-    public Integer getAverageFuelConsumption() {
-        return averageFuelConsumption;
-    }
-
-    public void setAverageFuelConsumption(Integer averageFuelConsumption) {
-        this.averageFuelConsumption = averageFuelConsumption;
-    }
-
-    public Date getIncomingTime() {
+    public Long getIncomingTime() {
         return incomingTime;
     }
 
-    public void setIncomingTime(Date incomingTime) {
+    public void setIncomingTime(Long incomingTime) {
         this.incomingTime = incomingTime;
     }
 
@@ -65,19 +55,32 @@ public class FlightDetails {
         this.plane = plane;
     }
 
-    public Float getCourse() {
+    public Double getCourse() {
         return course;
     }
 
-    public void setCourse(Float course) {
+    public void setCourse(Double course) {
         this.course = course;
     }
 
-    public Float getVelocity() {
+    public Double getVelocity() {
         return velocity;
     }
 
-    public void setVelocity(Float velocity) {
+    public void setVelocity(Double velocity) {
         this.velocity = velocity;
+    }
+
+    public void updatePosition(Point point,long timestamp) {
+        this.gpsLatitude = point.getLatitude();
+        this.gpsLongitude = point.getLongitude();
+        this.course = point.getCourse();
+        this.incomingTime = timestamp;
+    }
+
+    @Override
+    public String toString() {
+        return "plane: "+ plane.getId()+";latitude: " +gpsLatitude+ ";longitude: "+gpsLongitude+";course:"+course+";velocity:"+velocity+";incomingTime:"+incomingTime;
+
     }
 }
