@@ -1,30 +1,22 @@
 package com.gl.planesAndAirfileds.simulator.util;
 
-import com.gl.planesAndAirfileds.simulator.domain.FlightDetails;
-import com.gl.planesAndAirfileds.simulator.domain.Plane;
 import com.gl.planesAndAirfileds.simulator.domain.Point;
+import com.gl.planesAndAirfileds.simulator.enums.FlightPhase;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Random;
 
 /**
  * Created by marcin.majka on 1/3/2017.
  */
 public class PlaneDataUtil {
-    // Speed in km/h
-    private final static int MIN_SPEED = 300;
-    private final static int MAX_SPEED = 950;
     //Radius in km
-    private final static float earthRadius = 6371;
-
-    private static double calculateAngularDistance(long incomingTime, double velocity) {
-        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-        long now = utc.toInstant().toEpochMilli();
-        double flightTimeInHour = (now - incomingTime) / 3600000d;
-        return velocity * flightTimeInHour / earthRadius;
-
-    }
+    private final static float EARTH_RADIUS = 6371;
+    private final static double DESCENT_DISTANCE = 100;
+    private final static double LANDING_DISTANCE = 10;
+    private final static long TAKEOFF_TIME_IN_SECONDS = 30;
 
     private static double calculateFinalCourse(double srcLat, double srcLon, double destLat, double destLon) {
         double longDiff = destLon - srcLon;
@@ -34,10 +26,8 @@ public class PlaneDataUtil {
         return (bearing + 180) % 360;
     }
 
-    public static Point calculateDestinationPoint(double latitude, double longitude, double course, double velocity, long incomingTime) {
-        double angularDistance = calculateAngularDistance(incomingTime, velocity);
-
-
+    public static Point calculateDestinationPoint(double latitude, double longitude, double course, double distance) {
+        double angularDistance = distance/EARTH_RADIUS;
         latitude = Math.toRadians(latitude);
         longitude = Math.toRadians(longitude);
         course = Math.toRadians(course);
@@ -53,19 +43,43 @@ public class PlaneDataUtil {
         return new Point(Math.toDegrees(latitudeEnd), Math.toDegrees(longitudeEnd), courseEnd);
     }
 
-    public static void updatePosition(FlightDetails flightDetails) {
-        Point destinationPoint = calculateDestinationPoint(flightDetails.getGpsLatitude(), flightDetails.getGpsLongitude(), flightDetails.getCourse(), flightDetails.getVelocity(), flightDetails.getIncomingTime());
+    public static FlightPhase calculateFlightPhaseChange(FlightPhase currentFlightPhase, LocalDateTime flightStartTime,double distanceTraveled,double flightDistance) {
         ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-        flightDetails.updatePosition(destinationPoint, utc.toInstant().toEpochMilli());
+        FlightPhase newFlightPhase = currentFlightPhase;
+        switch (currentFlightPhase) {
+            case TAKE_OFF:
+                Duration between = Duration.between(flightStartTime, utc.toLocalDateTime());
+                if (between.getSeconds() >TAKEOFF_TIME_IN_SECONDS) {
+                    newFlightPhase = FlightPhase.CRUISE;
+                }
+                break;
+            case CRUISE:
+                if(flightDistance - distanceTraveled <= DESCENT_DISTANCE) {
+                    newFlightPhase = FlightPhase.DESCENT;
+                }
+                break;
+            case DESCENT:
+                if(flightDistance - distanceTraveled <= LANDING_DISTANCE) {
+                    newFlightPhase = FlightPhase.LANDING;
+                }
+                break;
+            case LANDED:
+                if(flightDistance - distanceTraveled <= 0) {
+                    newFlightPhase = FlightPhase.LANDED;
+                }
+                break;
+        }
+
+        return newFlightPhase;
     }
 
-    public static FlightDetails generateStartingFlightDetails(Plane plane) {
-        Random random = new Random();
-        double latitude = random.doubles(-90, 90).limit(1).findFirst().getAsDouble();
-        double longitude = random.doubles(-180, 180).limit(1).findFirst().getAsDouble();
-        double course = random.doubles(0, 360).limit(1).findFirst().getAsDouble();
-        double velocity = random.doubles(MIN_SPEED, MAX_SPEED).limit(1).findFirst().getAsDouble();
-        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-        return new FlightDetails(utc.toInstant().toEpochMilli(), latitude, longitude, course, velocity, plane);
+    public static double calculateCurrentVelocity(FlightPhase flightPhase, double maxVelocity ) {
+
+        if(flightPhase.equals(FlightPhase.LANDED)) {
+            return 0;
+        }
+        return maxVelocity+maxVelocity*flightPhase.getVelocityChange()/100;
+
     }
+
 }

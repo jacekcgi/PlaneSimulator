@@ -38,4 +38,5 @@ public class Point {
     public void setCourse(double course) {
         this.course = course;
     }
+
 }

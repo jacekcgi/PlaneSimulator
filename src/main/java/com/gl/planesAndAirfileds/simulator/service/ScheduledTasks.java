@@ -24,7 +24,7 @@ public class ScheduledTasks {
 
 
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 20000)
     public void generatePlaneData() {
         List<Plane> listOfPlanes = planeLogDataService.getListOfPlanes();
 

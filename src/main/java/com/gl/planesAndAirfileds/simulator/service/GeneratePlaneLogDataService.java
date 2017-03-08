@@ -2,18 +2,24 @@ package com.gl.planesAndAirfileds.simulator.service;
 
 import com.gl.planesAndAirfileds.simulator.domain.FlightDetails;
 import com.gl.planesAndAirfileds.simulator.domain.Plane;
+import com.gl.planesAndAirfileds.simulator.domain.Point;
+import com.gl.planesAndAirfileds.simulator.enums.FlightPhase;
+import com.gl.planesAndAirfileds.simulator.util.FuelConsumptionUtil;
 import com.gl.planesAndAirfileds.simulator.util.PlaneDataUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -23,8 +29,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class GeneratePlaneLogDataService {
 
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private Map<Long, FlightDetails> flightDetailsMap = new ConcurrentHashMap<>();
+    // Speed in km/h
+    private final static int MIN_SPEED = 300;
+    private final static int MAX_SPEED = 950;
+
     private static final String SERVER_ADDRESS = "http://localhost:8080/";
 
     RestTemplate restTemplate;
@@ -34,13 +44,21 @@ public class GeneratePlaneLogDataService {
     }
 
     public List<Plane> getListOfPlanes() {
-        ResponseEntity<Plane[]> planeResponseEntity = restTemplate.getForEntity(SERVER_ADDRESS +"planeIdList", Plane[].class);
         List<Plane> planeList = null;
-        if (planeResponseEntity.getStatusCode().equals(HttpStatus.OK)) {
-            planeList = Arrays.asList(planeResponseEntity.getBody());
-        } else {
+        try {
+            ResponseEntity<Plane[]> planeResponseEntity = restTemplate.getForEntity(SERVER_ADDRESS + "planeIdList", Plane[].class);
+            if (planeResponseEntity.getStatusCode().equals(HttpStatus.OK)) {
+                planeList = Arrays.asList(planeResponseEntity.getBody());
+            } else {
+                planeList = new ArrayList<>();
+            }
+        } catch (RestClientException e) {
+            logger.error("Connection  exception "+e);
             planeList = new ArrayList<>();
         }
+
+
+
         return planeList;
     }
 
@@ -48,17 +66,64 @@ public class GeneratePlaneLogDataService {
     public void generatePlaneDataLog(Plane plane) throws InterruptedException {
         FlightDetails flightDetails = flightDetailsMap.get(plane.getId());
         if (flightDetails == null) {
-            System.out.println("Tworze");
-            flightDetails = PlaneDataUtil.generateStartingFlightDetails(plane);
+            flightDetails = generateStartingFlightDetails(plane);
             flightDetailsMap.put(plane.getId(), flightDetails);
-
         } else {
-            System.out.println("Updatuje !!!!!!");
-            PlaneDataUtil.updatePosition(flightDetails);
+            updateFlightDetails(flightDetails);
+        }
+        logger.info(flightDetails.toString());
+        try {
+            ResponseEntity<FlightDetails> responseEntity = restTemplate.postForEntity(SERVER_ADDRESS + "flightDetails", flightDetails, FlightDetails.class);
+        } catch (RestClientException e) {
+            logger.error("Connection  exception "+e);
+        }
+    }
+
+    public void updateFlightDetails(FlightDetails flightDetails) {
+        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
+        long now = utc.toInstant().toEpochMilli();
+        double flightTimeInHour = (now - flightDetails.getIncomingTime()) / 3600000d;
+        double velocity =  PlaneDataUtil.calculateCurrentVelocity(flightDetails.getFlightPhase(),flightDetails.getMaxVelocity());
+        double distance = velocity * flightTimeInHour;
+        flightDetails.setVelocity(velocity);
+        Point destinationPoint = PlaneDataUtil.calculateDestinationPoint(flightDetails.getGpsLatitude(), flightDetails.getGpsLongitude(), flightDetails.getCourse(), distance);
+        flightDetails.updatePosition(destinationPoint);
+        flightDetails.setIncomingTime(now);
+        Double distanceTraveled = flightDetails.getDistanceTraveled();
+        if(distanceTraveled == null) {
+            distanceTraveled = distance;
+        } else {
+            distanceTraveled = distanceTraveled +distance;
         }
 
-        System.out.println(flightDetails);
-      //  URI uri = restTemplate.postForLocation(SERVER_ADDRESS + "flightDetails", flightDetails,FlightDetails.class);
-       // System.out.println(uri);
+        flightDetails.setDistanceTraveled(distanceTraveled);
+        FlightPhase flightPhase = PlaneDataUtil.calculateFlightPhaseChange(flightDetails.getFlightPhase(), flightDetails.getFlightStartTime(), flightDetails.getDistanceTraveled(), flightDetails.getFlightDistance());
+        flightDetails.setFlightPhase(flightPhase);
+        double averageFuelConsumption = FuelConsumptionUtil.calculateCurrentFuelConsumption(flightDetails.getFlightPhase(),flightDetails.getBasedFuelConsumption());
+        flightDetails.setAverageFuelConsumption(averageFuelConsumption);
+        LocalDateTime flightStartTime = flightDetails.getFlightStartTime();
+        flightStartTime.toInstant(ZoneOffset.ofHours(0));
+        flightDetails.setFlightTime(now-flightStartTime.toInstant(ZoneOffset.ofHours(0)).toEpochMilli());
+        flightDetails.setRemainingFuel(FuelConsumptionUtil.calculateRemainingFuel(flightDetails.getRemainingFuel(),averageFuelConsumption,distance));
+
+    }
+
+    public static FlightDetails generateStartingFlightDetails(Plane plane) {
+        Random random = new Random();
+//        double latitude = random.doubles(-90, 90).limit(1).findFirst().getAsDouble();
+//        double longitude = random.doubles(-180, 180).limit(1).findFirst().getAsDouble();
+        double latitude = random.doubles(48, 55).limit(1).findFirst().getAsDouble();
+        double longitude = random.doubles(13, 25).limit(1).findFirst().getAsDouble();
+        double course = random.doubles(0, 360).limit(1).findFirst().getAsDouble();
+        double maxVelocity = random.doubles(MIN_SPEED, MAX_SPEED).limit(1).findFirst().getAsDouble();
+        double velocity = PlaneDataUtil.calculateCurrentVelocity(FlightPhase.TAKE_OFF,maxVelocity);
+        double fuelCapacityInLiter = random.doubles(100000, 250000).limit(1).findFirst().getAsDouble();
+        double basedFuelConsumptionLiterPerKm = random.doubles(7, 16).limit(1).findFirst().getAsDouble();
+        double averageFuelConsumptionLiterPerKm = FuelConsumptionUtil.calculateCurrentFuelConsumption(FlightPhase.TAKE_OFF,basedFuelConsumptionLiterPerKm);;
+        double distance = FuelConsumptionUtil.calculatePlaneDistanceInKm(basedFuelConsumptionLiterPerKm,fuelCapacityInLiter);
+        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
+
+
+        return new FlightDetails(utc.toInstant().toEpochMilli(), latitude, longitude, course, maxVelocity,velocity,plane, FlightPhase.TAKE_OFF,fuelCapacityInLiter,basedFuelConsumptionLiterPerKm,averageFuelConsumptionLiterPerKm,utc.toLocalDateTime(),distance);
     }
 }
