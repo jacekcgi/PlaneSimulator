@@ -1,10 +1,11 @@
 package com.gl.planesAndAirfileds.simulator.service;
 
 import com.gl.planesAndAirfileds.simulator.domain.Plane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -14,8 +15,7 @@ import java.util.List;
 public class ScheduledTasks {
 
     private int counter = 0;
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     GeneratePlaneLogDataService planeLogDataService;
 
     public ScheduledTasks(GeneratePlaneLogDataService planeLogDataService) {
@@ -24,7 +24,7 @@ public class ScheduledTasks {
 
 
 
-    @Scheduled(fixedRate = 20000)
+    @Scheduled(fixedRate = 60000)
     public void generatePlaneData() {
         List<Plane> listOfPlanes = planeLogDataService.getListOfPlanes();
 
@@ -32,7 +32,7 @@ public class ScheduledTasks {
            try {
                planeLogDataService.generatePlaneDataLog(plane);
            } catch (InterruptedException e) {
-               e.printStackTrace();
+               logger.error("InterruptedException ",e);
            }
        }
     }

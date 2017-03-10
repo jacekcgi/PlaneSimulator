@@ -191,7 +191,7 @@ public class FlightDetails {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("plane: " + plane.getId());
+        sb.append("plane: " + plane.getSid());
         sb.append(";latitude: " + gpsLatitude);
         sb.append(";longitude: " + gpsLongitude);
         sb.append(";course:" + course);

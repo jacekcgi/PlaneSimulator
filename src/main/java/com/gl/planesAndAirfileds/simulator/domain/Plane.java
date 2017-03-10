@@ -6,13 +6,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Plane {
 
-    private Long id;
+    private String  sid;
 
-    public Long getId() {
-        return id;
+    public String getSid() {
+        return sid;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setSid(String sid) {
+         this.sid = sid;
     }
 }

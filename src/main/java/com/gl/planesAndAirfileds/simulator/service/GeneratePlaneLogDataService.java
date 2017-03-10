@@ -8,6 +8,7 @@ import com.gl.planesAndAirfileds.simulator.util.FuelConsumptionUtil;
 import com.gl.planesAndAirfileds.simulator.util.PlaneDataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +31,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GeneratePlaneLogDataService {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private Map<Long, FlightDetails> flightDetailsMap = new ConcurrentHashMap<>();
+    private Map<String, FlightDetails> flightDetailsMap = new ConcurrentHashMap<>();
     // Speed in km/h
     private final static int MIN_SPEED = 300;
     private final static int MAX_SPEED = 950;
 
-    private static final String SERVER_ADDRESS = "http://localhost:8080/";
+    @Value("${planeList.get.url}")
+    private String planeListUrl;
+    @Value("${flightDetails.post.url}")
+    private String flightDetailsPostUrl = "http://localhost:8080/";
 
-    RestTemplate restTemplate;
+    private RestTemplate restTemplate;
 
     public GeneratePlaneLogDataService(RestTemplateBuilder builder) {
         this.restTemplate = builder.build();
@@ -46,7 +50,7 @@ public class GeneratePlaneLogDataService {
     public List<Plane> getListOfPlanes() {
         List<Plane> planeList = null;
         try {
-            ResponseEntity<Plane[]> planeResponseEntity = restTemplate.getForEntity(SERVER_ADDRESS + "planeIdList", Plane[].class);
+            ResponseEntity<Plane[]> planeResponseEntity = restTemplate.getForEntity(planeListUrl, Plane[].class);
             if (planeResponseEntity.getStatusCode().equals(HttpStatus.OK)) {
                 planeList = Arrays.asList(planeResponseEntity.getBody());
             } else {
@@ -64,16 +68,16 @@ public class GeneratePlaneLogDataService {
 
     @Async
     public void generatePlaneDataLog(Plane plane) throws InterruptedException {
-        FlightDetails flightDetails = flightDetailsMap.get(plane.getId());
+        FlightDetails flightDetails = flightDetailsMap.get(plane.getSid());
         if (flightDetails == null) {
             flightDetails = generateStartingFlightDetails(plane);
-            flightDetailsMap.put(plane.getId(), flightDetails);
+            flightDetailsMap.put(plane.getSid(), flightDetails);
         } else {
             updateFlightDetails(flightDetails);
         }
         logger.info(flightDetails.toString());
         try {
-            ResponseEntity<FlightDetails> responseEntity = restTemplate.postForEntity(SERVER_ADDRESS + "flightDetails", flightDetails, FlightDetails.class);
+            ResponseEntity<FlightDetails> responseEntity = restTemplate.postForEntity(flightDetailsPostUrl, flightDetails, FlightDetails.class);
         } catch (RestClientException e) {
             logger.error("Connection  exception "+e);
         }
