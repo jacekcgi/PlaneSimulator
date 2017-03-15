@@ -1,7 +1,4 @@
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import com.gl.planesAndAirfileds.simulator.util.PlaneDataUtil;
 
 /**
  * Created by marcin.majka on 1/3/2017.
@@ -9,32 +6,29 @@ import java.time.ZonedDateTime;
 public class Test {
     public static void main(String[] args) {
 
-        double maxVelocity = 450;
-        double res = maxVelocity+maxVelocity*(-30)/100;
-        System.out.println("maxVelocity "+res);
+        double latitude = 52.47196705965058;
+        double longitude = 20.67182205165279;
 
-        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-        LocalDateTime time = utc.toLocalDateTime();
-        time = time.minus(Duration.ofMinutes(5));
-        Duration between = Duration.between(time, utc.toLocalDateTime());
-        System.out.println("between "+between.getSeconds());
+        double latitude2 =  51.7219;
+        double longitude2 = 19.3980;
 
+        double latitudeR =  Math.toRadians(latitude);
+        double longitudeR = Math.toRadians(longitude);
 
-        double maxDistance = 12500;
-        maxDistance = maxDistance - maxDistance*0.10;
-        double minDistance = maxDistance*0.10;
+        double latitude2R =  Math.toRadians(latitude2);
+        double longitude2R =  Math.toRadians(longitude2);
 
 
-        System.out.println("maxDistance " +maxDistance+ " "+minDistance);
 
-        double capacity = 204500;
-        double average = 12;
-        double percentage = 30;
-        double cons = average*percentage/100;
-        System.out.println("SSS "+cons);
+        System.out.println(PlaneDataUtil.calculateFlightDistanceBetweenPointsDegree(latitude,longitude,latitude2,longitude2));
+        System.out.println(PlaneDataUtil.calculateFlightDistanceBetweenPointsRadians(latitudeR,longitudeR,latitude2R,longitude2R));
 
-        double flightTimeInHour = 9830d/3600000d;
-        System.out.println(flightTimeInHour);
+        System.out.println("Course "+PlaneDataUtil.calculateNewCourseRadians(latitudeR,longitudeR,latitude2R,longitude2R));
+        System.out.println("Course "+PlaneDataUtil.calculateFinalCourseRadians(latitude2R,longitude2R,latitudeR,longitudeR));
+
+
+
+
 
     }
 }

@@ -29,6 +29,11 @@ public class FlightDetails {
         this.flightDistance = flightDistance;
         this.distanceTraveled = 0d;
         this.flightTime = 0l;
+        if(flightPhase.equals(FlightPhase.LANDED)) {
+            this.isLanded = true;
+        } else {
+            this.isLanded = false;
+        }
     }
 
 
@@ -51,6 +56,7 @@ public class FlightDetails {
     private Double averageFuelConsumption;
     private Double distanceTraveled;
     private Plane plane;
+    private boolean isLanded;
 
     private FlightPhase flightPhase;
 
@@ -108,6 +114,9 @@ public class FlightDetails {
 
     public void setFlightPhase(FlightPhase flightPhase) {
         this.flightPhase = flightPhase;
+        if(flightPhase.equals(FlightPhase.LANDED)) {
+            this.isLanded = true;
+        }
     }
 
     public Double getFuelCapacity() {
@@ -188,6 +197,14 @@ public class FlightDetails {
         this.course = point.getCourse();
     }
 
+    public boolean isLanded() {
+        return isLanded;
+    }
+
+    public void setLanded(boolean landed) {
+        isLanded = landed;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -206,6 +223,7 @@ public class FlightDetails {
         sb.append(";fuelCapacity "+ fuelCapacity);
         sb.append(";remainingFuel "+ remainingFuel);
         sb.append(";flightTime "+ flightTime);
+        sb.append(";isLanded "+ isLanded);
         return sb.toString();
     }
 }
