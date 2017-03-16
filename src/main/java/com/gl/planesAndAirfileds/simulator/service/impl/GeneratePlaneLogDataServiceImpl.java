@@ -36,9 +36,9 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
     private Map<String, FlightDetails> flightDetailsMap = new ConcurrentHashMap<>();
 
     // Speed in km/h
-    private final static int MIN_SPEED = 4000;
+    private final static int MIN_SPEED = 400;
 
-    private final static int MAX_SPEED = 5000;
+    private final static int MAX_SPEED = 900;
 
     @Value("${planeList.get.url}")
     private String planeListUrl;
@@ -177,13 +177,9 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
         Random random = new Random();
 //        double latitude = random.doubles(-90, 90).limit(1).findFirst().getAsDouble();
 //        double longitude = random.doubles(-180, 180).limit(1).findFirst().getAsDouble();
-//        double latitude = random.doubles(49, 53).limit(1).findFirst().getAsDouble();
-//        double longitude = random.doubles(15, 23).limit(1).findFirst().getAsDouble();
-        double latitude = 52.45;
-        double longitude = 20.651;
-
-        // double course = random.doubles(0, 360).limit(1).findFirst().getAsDouble();
-        double course = 30;
+        double latitude = random.doubles(49, 53).limit(1).findFirst().getAsDouble();
+        double longitude = random.doubles(15, 23).limit(1).findFirst().getAsDouble();
+         double course = random.doubles(0, 360).limit(1).findFirst().getAsDouble();
         double maxVelocity = random.doubles(MIN_SPEED, MAX_SPEED).limit(1).findFirst().getAsDouble();
         double velocity = PlaneDataUtil.calculateCurrentVelocity(FlightPhase.TAKE_OFF, maxVelocity);
         double fuelCapacityInLiter = random.doubles(100000, 250000).limit(1).findFirst().getAsDouble();
