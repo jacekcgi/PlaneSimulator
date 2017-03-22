@@ -53,10 +53,10 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
     }
 
     @Override
-    public List<Plane> getListOfPlanes() {
-        List<Plane> planeList = null;
+    public List<String> getListOfPlanes() {
+        List<String> planeList = null;
         try {
-            ResponseEntity<Plane[]> planeResponseEntity = restTemplate.getForEntity(planeListUrl, Plane[].class);
+            ResponseEntity<String[]> planeResponseEntity = restTemplate.getForEntity(planeListUrl, String[].class);
             if (planeResponseEntity.getStatusCode().equals(HttpStatus.OK)) {
                 planeList = Arrays.asList(planeResponseEntity.getBody());
             }
@@ -179,7 +179,7 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
 //        double longitude = random.doubles(-180, 180).limit(1).findFirst().getAsDouble();
         double latitude = random.doubles(49, 53).limit(1).findFirst().getAsDouble();
         double longitude = random.doubles(15, 23).limit(1).findFirst().getAsDouble();
-         double course = random.doubles(0, 360).limit(1).findFirst().getAsDouble();
+        double course = random.doubles(0, 360).limit(1).findFirst().getAsDouble();
         double maxVelocity = random.doubles(MIN_SPEED, MAX_SPEED).limit(1).findFirst().getAsDouble();
         double velocity = PlaneDataUtil.calculateCurrentVelocity(FlightPhase.TAKE_OFF, maxVelocity);
         double fuelCapacityInLiter = random.doubles(100000, 250000).limit(1).findFirst().getAsDouble();

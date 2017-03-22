@@ -8,6 +8,13 @@ public class Plane {
 
     private String  sid;
 
+    public Plane() {
+    }
+
+    public Plane(String sid) {
+        this.sid = sid;
+    }
+
     public String getSid() {
         return sid;
     }

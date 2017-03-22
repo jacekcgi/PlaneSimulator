@@ -16,7 +16,9 @@ import java.util.List;
 public class ScheduledTasks {
 
     private int counter = 0;
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     GeneratePlaneLogDataService planeLogDataService;
 
     @Autowired
@@ -24,20 +26,19 @@ public class ScheduledTasks {
         this.planeLogDataService = planeLogDataService;
     }
 
-
-
     @Scheduled(fixedRate = 30000)
     public void generatePlaneData() {
-        List<Plane> listOfPlanes = planeLogDataService.getListOfPlanes();
+        List<String> listOfPlanes = planeLogDataService.getListOfPlanes();
 
 //        listOfPlanes.forEach(planeLogDataService::generatePlaneDataLog);
-       for(Plane plane:listOfPlanes) {
-           try {
-               planeLogDataService.generatePlaneDataLog(plane);
-           } catch (InterruptedException e) {
-               logger.error("InterruptedException ",e);
-           }
-       }
+        for (String planeSid : listOfPlanes) {
+            try {
+                planeLogDataService.generatePlaneDataLog(new Plane(planeSid));
+            }
+            catch (InterruptedException e) {
+                logger.error("InterruptedException ", e);
+            }
+        }
     }
 
 }

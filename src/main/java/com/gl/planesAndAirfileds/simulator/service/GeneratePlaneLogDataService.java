@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface GeneratePlaneLogDataService {
 
-    List<Plane> getListOfPlanes();
+    List<String> getListOfPlanes();
 
     void generatePlaneDataLog(Plane plane) throws InterruptedException;
 
