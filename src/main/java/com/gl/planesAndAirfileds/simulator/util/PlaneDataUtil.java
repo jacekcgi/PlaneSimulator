@@ -40,8 +40,9 @@ public class PlaneDataUtil {
         double y = Math.sin(longDiff) * Math.cos(destLat);
         double x = Math.cos(srcLat) * Math.sin(destLat) - Math.sin(srcLat) * Math.cos(destLat) * Math.cos(longDiff);
         double bearing = (Math.toDegrees(Math.atan2(y, x)) + 360) % 360;
-        return  bearing;
+        return bearing;
     }
+
     /**
      * Coordinates in degree
      *
@@ -72,18 +73,21 @@ public class PlaneDataUtil {
         ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
         FlightPhase newFlightPhase = currentFlightPhase;
 
-        if(currentFlightPhase.equals(FlightPhase.TAKE_OFF)) {
+        if (currentFlightPhase.equals(FlightPhase.TAKE_OFF)) {
             Duration between = Duration.between(flightStartTime, utc.toLocalDateTime());
             if (between.getSeconds() > TAKEOFF_TIME_IN_SECONDS) {
                 newFlightPhase = FlightPhase.CRUISE;
             }
-        } else {
+        }
+        else {
             double distanceToTravel = flightDistance - distanceTraveled;
             if (distanceToTravel <= 0) {
                 newFlightPhase = FlightPhase.LANDED;
-            } else if(distanceToTravel <= LANDING_DISTANCE){
+            }
+            else if (distanceToTravel <= LANDING_DISTANCE) {
                 newFlightPhase = FlightPhase.LANDING;
-            } else if(distanceToTravel <= DESCENT_DISTANCE) {
+            }
+            else if (distanceToTravel <= DESCENT_DISTANCE) {
                 newFlightPhase = FlightPhase.DESCENT;
             }
         }
@@ -101,6 +105,7 @@ public class PlaneDataUtil {
 
     /**
      * Coordinates in degree
+     *
      * @param srcLat
      * @param srcLon
      * @param destLat
@@ -110,12 +115,13 @@ public class PlaneDataUtil {
     public static double calculateFlightDistanceBetweenPointsDegree(double srcLat, double srcLon, double destLat,
                                                                     double destLon) {
         return calculateFlightDistanceBetweenPointsRadians(Math.toRadians(srcLat), Math.toRadians(srcLon),
-                Math.toRadians(destLat), Math.toRadians(destLon ));
+                Math.toRadians(destLat), Math.toRadians(destLon));
 
     }
 
     /**
      * Coordinates in radian.
+     *
      * @param srcLat
      * @param srcLon
      * @param destLat

@@ -6,7 +6,9 @@ package com.gl.planesAndAirfileds.simulator.domain;
  */
 public class Point {
     private double latitude;
+
     private double longitude;
+
     private double course;
 
     public Point(double latitude, double longitude, double course) {

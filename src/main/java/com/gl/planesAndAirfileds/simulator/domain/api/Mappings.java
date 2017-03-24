@@ -6,5 +6,6 @@ package com.gl.planesAndAirfileds.simulator.domain.api;
 public interface Mappings {
     //PlanesController
     String ADD_PLANE = "/addPlane";
-    String ADD_NEW_COORDINATES="/newCoordinates/{sid}/{latitude}/{longitude}";
+
+    String ADD_NEW_COORDINATES = "/newCoordinates/{sid}/{latitude}/{longitude}";
 }

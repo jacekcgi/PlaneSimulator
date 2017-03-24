@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
  */
 public class FlightDetails {
     public FlightDetails(long incomingTime, Double gpsLatitude, Double gpsLongitude, Double course, Double maxVelocity,
-                         Double velocity,Plane plane,
+                         Double velocity, Plane plane,
                          FlightPhase flightPhase, Double fuelCapacity, Double basedFuelConsumption,
-                         Double averageFuelConsumption,LocalDateTime flightStartTime, Double flightDistance) {
+                         Double averageFuelConsumption, LocalDateTime flightStartTime, Double flightDistance) {
 
         this.incomingTime = incomingTime;
         this.gpsLatitude = gpsLatitude;
@@ -29,33 +29,48 @@ public class FlightDetails {
         this.flightDistance = flightDistance;
         this.distanceTraveled = 0d;
         this.flightTime = 0l;
-        if(flightPhase.equals(FlightPhase.LANDED)) {
+        if (flightPhase.equals(FlightPhase.LANDED)) {
             this.isLanded = true;
-        } else {
+        }
+        else {
             this.isLanded = false;
         }
     }
-
 
     public FlightDetails() {
 
     }
 
     private LocalDateTime flightStartTime;
+
     private Double flightDistance;
+
     private Double gpsLatitude;
+
     private Double gpsLongitude;
+
     private Double course;
+
     private Double maxVelocity;
+
     private Double velocity;
+
     private Long incomingTime;
+
     private Long flightTime;
+
     private Double fuelCapacity;
+
     private Double remainingFuel;
+
     private Double basedFuelConsumption;
+
     private Double averageFuelConsumption;
+
     private Double distanceTraveled;
+
     private Plane plane;
+
     private boolean isLanded;
 
     private FlightPhase flightPhase;
@@ -114,7 +129,7 @@ public class FlightDetails {
 
     public void setFlightPhase(FlightPhase flightPhase) {
         this.flightPhase = flightPhase;
-        if(flightPhase.equals(FlightPhase.LANDED)) {
+        if (flightPhase.equals(FlightPhase.LANDED)) {
             this.isLanded = true;
         }
     }
@@ -215,15 +230,15 @@ public class FlightDetails {
         sb.append(";maxVelocity:" + maxVelocity);
         sb.append(";velocity:" + velocity);
         sb.append(";flightPhase:" + flightPhase);
-        sb.append(";flightStartTime "+flightStartTime);
-        sb.append(";flightDistance "+ flightDistance);
-        sb.append(";distanceTraveled "+ distanceTraveled);
-        sb.append(";basedFuelConsumption "+ basedFuelConsumption);
-        sb.append(";averageFuelConsumption "+ averageFuelConsumption);
-        sb.append(";fuelCapacity "+ fuelCapacity);
-        sb.append(";remainingFuel "+ remainingFuel);
-        sb.append(";flightTime "+ flightTime);
-        sb.append(";isLanded "+ isLanded);
+        sb.append(";flightStartTime " + flightStartTime);
+        sb.append(";flightDistance " + flightDistance);
+        sb.append(";distanceTraveled " + distanceTraveled);
+        sb.append(";basedFuelConsumption " + basedFuelConsumption);
+        sb.append(";averageFuelConsumption " + averageFuelConsumption);
+        sb.append(";fuelCapacity " + fuelCapacity);
+        sb.append(";remainingFuel " + remainingFuel);
+        sb.append(";flightTime " + flightTime);
+        sb.append(";isLanded " + isLanded);
         return sb.toString();
     }
 }
