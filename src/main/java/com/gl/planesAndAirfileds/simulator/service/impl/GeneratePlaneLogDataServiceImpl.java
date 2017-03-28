@@ -60,7 +60,7 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
 //        cal velocity
         long now = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
         double flightTimeInHour = (now - flightDetailsDto.getLastCreatedDate()
-                .toEpochSecond(ZoneOffset.UTC)) / 3600000d;
+                .toEpochSecond(ZoneOffset.UTC)) / 3600d;
         double velocity = PlaneDataUtil
                 .calculateCurrentVelocity(flightDetailsDto.getLastFlightPhase(), fakeGeneratedData.getMaxVelocity());
         double distance = velocity * flightTimeInHour;
