@@ -37,7 +37,6 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
     private final static int MAX_SPEED = 900;
 
     @Override
-//    @Async // na koniec, bo dane musza byc wylapane i wyslane razem !!!
     public PostFlightDetailsDto createFlightDetails(GetFlightDetailsDto getFlightDetailsDto) {
         FakeGeneratedData fakeGeneratedData = flightDetailsMap.computeIfAbsent(getFlightDetailsDto.getFlightRouteSid(),
                 k -> generateFakeFlightData());
