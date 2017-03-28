@@ -1,9 +1,8 @@
 package com.gl.planesAndAirfileds.simulator.service;
 
-import com.gl.planesAndAirfileds.simulator.domain.FlightDetails;
-import com.gl.planesAndAirfileds.simulator.domain.Plane;
-
-import java.util.List;
+import com.gl.planesAndAirfileds.simulator.domain.FakeGeneratedData;
+import com.gl.planesAndAirfileds.simulator.domain.PostFlightDetailsDto;
+import com.gl.planesAndAirfileds.simulator.domain.GetFlightDetailsDto;
 
 /**
  * Created by marcin.majka on 1/3/2017.
@@ -11,13 +10,7 @@ import java.util.List;
 
 public interface GeneratePlaneLogDataService {
 
-    List<String> getListOfPlanes();
+    PostFlightDetailsDto createFlightDetails(GetFlightDetailsDto getFlightDetailsDto);
 
-    void generatePlaneDataLog(Plane plane) throws InterruptedException;
-
-    void changePlainCourse(String sid, Double latitude, Double longitude);
-
-    public void updateFlightDetails(FlightDetails flightDetails);
-
-    public FlightDetails generateStartingFlightDetails(Plane plane);
+    FakeGeneratedData generateFakeFlightData();
 }

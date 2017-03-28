@@ -11,7 +11,7 @@ import java.time.ZonedDateTime;
 /**
  * Created by marcin.majka on 1/3/2017.
  */
-public class PlaneDataUtil {
+public final class PlaneDataUtil {
     //Radius in km
     private final static float EARTH_RADIUS = 6371;
 
@@ -56,6 +56,8 @@ public class PlaneDataUtil {
         double angularDistance = distance / EARTH_RADIUS;
         latitude = Math.toRadians(latitude);
         longitude = Math.toRadians(longitude);
+
+        // TODO good ? or unnecessary
         course = Math.toRadians(course);
 
         double latitudeEnd = Math.asin(Math.sin(latitude) * Math.cos(angularDistance) +
@@ -64,22 +66,22 @@ public class PlaneDataUtil {
         double longitudeEnd = longitude + Math.atan2(Math.sin(course) * Math.sin(angularDistance) * Math.cos(latitude),
                 Math.cos(angularDistance) - Math.sin(latitude) * Math.sin(latitudeEnd));
 
-        double courseEnd = calculateFinalCourseRadians(latitudeEnd, longitudeEnd, latitude, longitude);
-        return new Point(Math.toDegrees(latitudeEnd), Math.toDegrees(longitudeEnd), courseEnd);
+        return new Point(Math.toDegrees(latitudeEnd), Math.toDegrees(longitudeEnd));
     }
 
     public static FlightPhase calculateFlightPhaseChange(FlightPhase currentFlightPhase, LocalDateTime flightStartTime,
                                                          double distanceTraveled, double flightDistance) {
         ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
-        FlightPhase newFlightPhase = currentFlightPhase;
+        // starting our plane...
+        FlightPhase newFlightPhase = FlightPhase.TAKE_OFF;
 
-        if (currentFlightPhase.equals(FlightPhase.TAKE_OFF)) {
+        if (currentFlightPhase == FlightPhase.TAKE_OFF) {
             Duration between = Duration.between(flightStartTime, utc.toLocalDateTime());
             if (between.getSeconds() > TAKEOFF_TIME_IN_SECONDS) {
                 newFlightPhase = FlightPhase.CRUISE;
             }
         }
-        else {
+        else if (currentFlightPhase == FlightPhase.CRUISE) {
             double distanceToTravel = flightDistance - distanceTraveled;
             if (distanceToTravel <= 0) {
                 newFlightPhase = FlightPhase.LANDED;
