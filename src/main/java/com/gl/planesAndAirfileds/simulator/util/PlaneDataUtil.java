@@ -57,7 +57,6 @@ public final class PlaneDataUtil {
         latitude = Math.toRadians(latitude);
         longitude = Math.toRadians(longitude);
 
-        // TODO good ? or unnecessary
         course = Math.toRadians(course);
 
         double latitudeEnd = Math.asin(Math.sin(latitude) * Math.cos(angularDistance) +
@@ -71,17 +70,17 @@ public final class PlaneDataUtil {
 
     public static FlightPhase calculateFlightPhaseChange(FlightPhase currentFlightPhase, LocalDateTime flightStartTime,
                                                          double distanceTraveled, double flightDistance) {
-        ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC);
+        LocalDateTime now = LocalDateTime.now();
         // starting our plane...
         FlightPhase newFlightPhase = FlightPhase.TAKE_OFF;
 
         if (currentFlightPhase == FlightPhase.TAKE_OFF) {
-            Duration between = Duration.between(flightStartTime, utc.toLocalDateTime());
+            Duration between = Duration.between(flightStartTime, now);
             if (between.getSeconds() > TAKEOFF_TIME_IN_SECONDS) {
                 newFlightPhase = FlightPhase.CRUISE;
             }
         }
-        else if (currentFlightPhase == FlightPhase.CRUISE) {
+        else {
             double distanceToTravel = flightDistance - distanceTraveled;
             if (distanceToTravel <= 0) {
                 newFlightPhase = FlightPhase.LANDED;
@@ -91,6 +90,9 @@ public final class PlaneDataUtil {
             }
             else if (distanceToTravel <= DESCENT_DISTANCE) {
                 newFlightPhase = FlightPhase.DESCENT;
+            }
+            else {
+                newFlightPhase = FlightPhase.CRUISE;
             }
         }
         return newFlightPhase;
