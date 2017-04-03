@@ -89,7 +89,7 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
         double averageFuelConsumption = FuelConsumptionUtil
                 .calculateCurrentFuelConsumption(newFlightPhase, fakeGeneratedData.getBasedFuelConsumption());
         double remainingFuel = FuelConsumptionUtil
-                .calculateRemainingFuel(averageFuelConsumption, averageFuelConsumption, distance);
+                .calculateRemainingFuel(fakeGeneratedData.getFuelCapacity(), averageFuelConsumption, distance);
         postFlightDetailsDto.setAverageFuelConsumption(averageFuelConsumption);
         postFlightDetailsDto.setRemainingFuel(remainingFuel);
 //        sid
@@ -117,8 +117,10 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
         FakeGeneratedData fakeGeneratedData = new FakeGeneratedData();
         double maxVelocity = RANDOM.doubles(MIN_SPEED, MAX_SPEED).limit(1).findFirst().getAsDouble();
         double basedFuelConsumption = RANDOM.doubles(7, 16).limit(1).findFirst().getAsDouble();
+        double fuelCapacityInLiter = RANDOM.doubles(100000, 250000).limit(1).findFirst().getAsDouble();
         fakeGeneratedData.setMaxVelocity(maxVelocity);
         fakeGeneratedData.setBasedFuelConsumption(basedFuelConsumption);
+        fakeGeneratedData.setFuelCapacity(fuelCapacityInLiter);
         return fakeGeneratedData;
 //        double latitude = RANDOM.doubles(-90, 90).limit(1).findFirst().getAsDouble();
 //        double longitude = RANDOM.doubles(-180, 180).limit(1).findFirst().getAsDouble();

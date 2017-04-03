@@ -12,6 +12,9 @@ public class FakeGeneratedData implements Serializable {
     // liters per km
     private double basedFuelConsumption;
 
+    // liters
+    private double fuelCapacity;
+
     public double getMaxVelocity() {
         return maxVelocity;
     }
@@ -26,5 +29,13 @@ public class FakeGeneratedData implements Serializable {
 
     public void setBasedFuelConsumption(double basedFuelConsumption) {
         this.basedFuelConsumption = basedFuelConsumption;
+    }
+
+    public double getFuelCapacity() {
+        return fuelCapacity;
+    }
+
+    public void setFuelCapacity(double fuelCapacity) {
+        this.fuelCapacity = fuelCapacity;
     }
 }
