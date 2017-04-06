@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
@@ -57,8 +58,8 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
         PostFlightDetailsDto postFlightDetailsDto = new PostFlightDetailsDto();
         LOGGER.debug("Start generate new flight details for: " + flightDetailsDto.getFlightRouteSid());
 //        cal velocity
-        long now = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
 
+        long now = LocalDateTime.now(Clock.systemUTC()).toEpochSecond(ZoneOffset.UTC);
         double flightTimeInHour = (now - flightDetailsDto.getLastCreatedDate()
                 .toEpochSecond(ZoneOffset.UTC)) / 3600d;
 

@@ -17,11 +17,6 @@ import java.util.concurrent.Executor;
 public class PlaneLogSimulatorApplication extends AsyncConfigurerSupport {
 
 
-    @PostConstruct
-    void started() {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    }
-
     public static void main(String[] args) {
 
         SpringApplication.run(PlaneLogSimulatorApplication.class, args);
