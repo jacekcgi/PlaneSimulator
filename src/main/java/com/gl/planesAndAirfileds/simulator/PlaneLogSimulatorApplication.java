@@ -7,12 +7,20 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import javax.annotation.PostConstruct;
+import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
 @SpringBootApplication
 @EnableAsync
 @EnableScheduling
 public class PlaneLogSimulatorApplication extends AsyncConfigurerSupport {
+
+
+    @PostConstruct
+    void started() {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
 
     public static void main(String[] args) {
 

@@ -58,11 +58,14 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
         LOGGER.debug("Start generate new flight details for: " + flightDetailsDto.getFlightRouteSid());
 //        cal velocity
         long now = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+
         double flightTimeInHour = (now - flightDetailsDto.getLastCreatedDate()
                 .toEpochSecond(ZoneOffset.UTC)) / 3600d;
+
         double velocity = PlaneDataUtil
                 .calculateCurrentVelocity(flightDetailsDto.getLastFlightPhase(), fakeGeneratedData.getMaxVelocity());
         double distance = velocity * flightTimeInHour;
+
         postFlightDetailsDto.setVelocity(velocity);
 
 //        calc new position

@@ -71,6 +71,7 @@ public final class PlaneDataUtil {
     public static FlightPhase calculateFlightPhaseChange(FlightPhase currentFlightPhase, LocalDateTime flightStartTime,
                                                          double distanceTraveled, double flightDistance) {
         LocalDateTime now = LocalDateTime.now();
+
         // starting our plane...
         FlightPhase newFlightPhase = FlightPhase.TAKE_OFF;
 
