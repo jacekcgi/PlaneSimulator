@@ -5,8 +5,6 @@ import com.gl.planesAndAirfileds.simulator.enums.FlightPhase;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 
 /**
  * Created by marcin.majka on 1/3/2017.
@@ -104,7 +102,7 @@ public final class PlaneDataUtil {
         if (flightPhase.equals(FlightPhase.LANDED)) {
             return 0;
         }
-        return maxVelocity + maxVelocity * flightPhase.getVelocityChange() / 100;
+        return maxVelocity * flightPhase.getVelocityChange() / 100;
 
     }
 

@@ -66,9 +66,6 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
         double velocity = PlaneDataUtil
                 .calculateCurrentVelocity(flightDetailsDto.getLastFlightPhase(), fakeGeneratedData.getMaxVelocity());
         double distance = velocity * flightTimeInHour;
-
-        postFlightDetailsDto.setVelocity(velocity);
-
 //        calc new position
         Point newCurrentPosition = PlaneDataUtil
                 .calculateDestinationPoint(flightDetailsDto.getCurrentLatitude(),
@@ -88,6 +85,18 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
                         flightDetailsDto.getStartFlightDate(),
                         distanceTraveled, flightDetailsDto.getFlightDistance());
         postFlightDetailsDto.setFlightPhase(newFlightPhase);
+
+//        calc new velocity if phase has changed or set the same velocity as earlier
+        if (newFlightPhase != flightDetailsDto.getLastFlightPhase()) {
+            double newVelocity = PlaneDataUtil
+                    .calculateCurrentVelocity(newFlightPhase, fakeGeneratedData.getMaxVelocity());
+            postFlightDetailsDto.setVelocity(newVelocity);
+            LOGGER.info("new velocity: ", newVelocity);
+        }
+        else {
+            postFlightDetailsDto.setVelocity(velocity);
+            LOGGER.info("current velocity: ", velocity);
+        }
 
 //        calc fuel consumption
         double averageFuelConsumption = FuelConsumptionUtil
