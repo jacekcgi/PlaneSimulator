@@ -78,19 +78,15 @@ public final class PlaneDataUtil {
             if (between.getSeconds() > TAKEOFF_TIME_IN_SECONDS) {
                 newFlightPhase = FlightPhase.CRUISE;
             }
-        }
-        else {
+        } else {
             double distanceToTravel = flightDistance - distanceTraveled;
             if (distanceToTravel <= 0) {
                 newFlightPhase = FlightPhase.LANDED;
-            }
-            else if (distanceToTravel <= LANDING_DISTANCE) {
+            } else if (distanceToTravel <= LANDING_DISTANCE) {
                 newFlightPhase = FlightPhase.LANDING;
-            }
-            else if (distanceToTravel <= DESCENT_DISTANCE) {
+            } else if (distanceToTravel <= DESCENT_DISTANCE) {
                 newFlightPhase = FlightPhase.DESCENT;
-            }
-            else {
+            } else {
                 newFlightPhase = FlightPhase.CRUISE;
             }
         }
@@ -102,6 +98,7 @@ public final class PlaneDataUtil {
         if (flightPhase.equals(FlightPhase.LANDED)) {
             return 0;
         }
+
         return maxVelocity * flightPhase.getVelocityChange() / 100;
 
     }

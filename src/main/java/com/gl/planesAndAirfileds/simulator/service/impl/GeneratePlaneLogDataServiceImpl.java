@@ -29,13 +29,10 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
     private static final Logger LOGGER = LoggerFactory.getLogger(GeneratePlaneLogDataServiceImpl.class);
 
     private static final Random RANDOM = new Random();
-
-    private Map<String, FakeGeneratedData> flightDetailsMap = new ConcurrentHashMap<>();
-
     // Speed in km/h
     private final static int MIN_SPEED = 400;
-
     private final static int MAX_SPEED = 900;
+    private Map<String, FakeGeneratedData> flightDetailsMap = new ConcurrentHashMap<>();
 
     @Override
     public PostFlightDetailsDto createFlightDetails(GetFlightDetailsDto getFlightDetailsDto) {
@@ -44,8 +41,7 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
         if (getFlightDetailsDto.getLastFlightPhase() != null && getFlightDetailsDto
                 .getLastFlightPhase() != FlightPhase.LANDED) {
             return generateFlightDetails(getFlightDetailsDto, fakeGeneratedData);
-        }
-        else {
+        } else {
             throw new FlightRouteException(
                     "Simulator does not generate data for FlightPhase status: " + getFlightDetailsDto
                             .getLastFlightPhase());
@@ -65,6 +61,7 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
 
         double velocity = PlaneDataUtil
                 .calculateCurrentVelocity(flightDetailsDto.getLastFlightPhase(), fakeGeneratedData.getMaxVelocity());
+
         double distance = velocity * flightTimeInHour;
 //        calc new position
         Point newCurrentPosition = PlaneDataUtil
@@ -91,11 +88,10 @@ public class GeneratePlaneLogDataServiceImpl implements GeneratePlaneLogDataServ
             double newVelocity = PlaneDataUtil
                     .calculateCurrentVelocity(newFlightPhase, fakeGeneratedData.getMaxVelocity());
             postFlightDetailsDto.setVelocity(newVelocity);
-            LOGGER.info("new velocity: ", newVelocity);
-        }
-        else {
+            LOGGER.info("new velocity: {}", newVelocity);
+        } else {
             postFlightDetailsDto.setVelocity(velocity);
-            LOGGER.info("current velocity: ", velocity);
+            LOGGER.info("current velocity: {}", velocity);
         }
 
 //        calc fuel consumption

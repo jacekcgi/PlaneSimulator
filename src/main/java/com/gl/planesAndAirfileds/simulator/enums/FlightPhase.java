@@ -6,7 +6,7 @@ package com.gl.planesAndAirfileds.simulator.enums;
 public enum FlightPhase {
     READY(30, 40),
     TAKE_OFF(30, 40),
-    CRUISE(-10, 0),
+    CRUISE(-10, 100),
     DESCENT(-20, 90),
     LANDING(-5, 20),
     LANDED(-100, 100);
